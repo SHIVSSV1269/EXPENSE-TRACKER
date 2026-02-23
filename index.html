@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpendAI – Intelligent Expense Tracker</title>
+  <meta name="description" content="AI-powered expense tracker with smart categorization, budget forecasting, and spending insights." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="brand-name">SpendAI</span>
+        <div class="ai-badge">AI</div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-page="dashboard" id="nav-dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-page="expenses" id="nav-expenses">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Expenses</span>
+        </a>
+        <a href="#" class="nav-item" data-page="budget" id="nav-budget">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span>Budget</span>
+        </a>
+        <a href="#" class="nav-item" data-page="insights" id="nav-insights">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span>AI Insights</span>
+          <span class="nav-badge" id="insights-badge">3</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="user-avatar">U</div>
+          <div class="user-info">
+            <div class="user-name">My Account</div>
+            <div class="user-sub">AI Pro</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- ============ DASHBOARD PAGE ============ -->
+      <section class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">AI-powered overview of your finances</p>
+          </div>
+          <button class="btn-primary" id="add-expense-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Expense
+          </button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card primary">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Total This Month</div>
+              <div class="stat-value" id="total-month">$0.00</div>
+              <div class="stat-change" id="month-change">—</div>
+            </div>
+          </div>
+          <div class="stat-card success">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Budget Remaining</div>
+              <div class="stat-value" id="budget-remaining">$0.00</div>
+              <div class="stat-change" id="budget-pct">of monthly budget</div>
+            </div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Avg Daily Spend</div>
+              <div class="stat-value" id="avg-daily">$0.00</div>
+              <div class="stat-change" id="top-category">—</div>
+            </div>
+          </div>
+          <div class="stat-card ai">
+            <div class="stat-icon ai-pulse">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12c0-2.76 1.12-5.26 2.93-7.07"/><path d="M15 9l-3 3-3-3"/></svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">AI Forecast</div>
+              <div class="stat-value" id="ai-forecast">$—</div>
+              <div class="stat-change">next month prediction</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="charts-row">
+          <div class="chart-card" id="spending-trend-card">
+            <div class="chart-header">
+              <h3>Spending Trend</h3>
+              <span class="chart-sub">Last 6 months</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="trendChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card small">
+            <div class="chart-header">
+              <h3>By Category</h3>
+              <span class="chart-sub">This month</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="categoryChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent + Anomalies -->
+        <div class="bottom-row">
+          <div class="recent-card">
+            <div class="section-header">
+              <h3>Recent Expenses</h3>
+              <a href="#" class="link-btn" data-page="expenses">View all</a>
+            </div>
+            <div class="expense-list" id="recent-list">
+              <div class="empty-state">No expenses yet. Add your first one!</div>
+            </div>
+          </div>
+          <div class="anomaly-card">
+            <div class="section-header">
+              <h3><span class="ai-chip">AI</span> Anomaly Alerts</h3>
+            </div>
+            <div id="anomaly-list">
+              <div class="empty-state">No anomalies detected. Great job!</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ EXPENSES PAGE ============ -->
+      <section class="page" id="page-expenses">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Expenses</h1>
+            <p class="page-subtitle">Manage and track all your transactions</p>
+          </div>
+          <button class="btn-primary" id="add-expense-btn-2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Expense
+          </button>
+        </div>
+
+        <div class="expense-controls">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="search-input" placeholder="Search expenses..." />
+          </div>
+          <select class="filter-select" id="filter-category">
+            <option value="">All Categories</option>
+            <option value="food">🍔 Food & Dining</option>
+            <option value="transport">🚗 Transport</option>
+            <option value="shopping">🛍️ Shopping</option>
+            <option value="health">💊 Health</option>
+            <option value="entertainment">🎬 Entertainment</option>
+            <option value="bills">📄 Bills</option>
+            <option value="education">📚 Education</option>
+            <option value="travel">✈️ Travel</option>
+            <option value="fitness">💪 Fitness</option>
+            <option value="personal">👤 Personal Care</option>
+            <option value="investments">📈 Investments</option>
+            <option value="other">📦 Other</option>
+          </select>
+          <select class="filter-select" id="filter-period">
+            <option value="all">All Time</option>
+            <option value="this-month" selected>This Month</option>
+            <option value="last-month">Last Month</option>
+            <option value="last-3">Last 3 Months</option>
+          </select>
+        </div>
+
+        <!-- Bar chart for weekly breakdown -->
+        <div class="chart-card full">
+          <div class="chart-header">
+            <h3>Weekly Breakdown</h3>
+            <span class="chart-sub">This month by day</span>
+          </div>
+          <div class="chart-container short">
+            <canvas id="weeklyChart"></canvas>
+          </div>
+        </div>
+
+        <div class="expense-table-wrap">
+          <table class="expense-table">
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th>AI Category</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="expense-tbody">
+              <tr><td colspan="5" class="empty-td">No expenses found.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ BUDGET PAGE ============ -->
+      <section class="page" id="page-budget">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Budget Planner</h1>
+            <p class="page-subtitle">AI-powered budget forecasting and management</p>
+          </div>
+        </div>
+
+        <div class="budget-grid">
+          <div class="budget-setup glass-card">
+            <h3>Monthly Budget</h3>
+            <div class="budget-input-group">
+              <label>Total Monthly Budget</label>
+              <div class="input-prefix">
+                <span>$</span>
+                <input type="number" id="total-budget-input" placeholder="2000" min="0" />
+              </div>
+              <button class="btn-secondary" id="save-budget-btn">Save Budget</button>
+            </div>
+            <div class="budget-bars" id="budget-bars">
+              <!-- dynamically generated -->
+            </div>
+          </div>
+
+          <div class="forecast-card glass-card">
+            <div class="ai-header">
+              <span class="ai-chip">ML</span>
+              <h3>AI Budget Forecast</h3>
+            </div>
+            <div class="forecast-content" id="forecast-content">
+              <div class="forecast-amount" id="forecast-amount">$—</div>
+              <div class="forecast-label">Predicted next month total</div>
+              <div class="forecast-confidence" id="forecast-confidence"></div>
+              <div class="forecast-breakdown" id="forecast-breakdown"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-budgets glass-card">
+          <h3>Category Budget Limits</h3>
+          <p class="card-sub">Set spending limits per category. AI will alert you when approaching them.</p>
+          <div class="cat-budget-grid" id="cat-budget-grid">
+            <!-- dynamically generated -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ INSIGHTS PAGE ============ -->
+      <section class="page" id="page-insights">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">AI Insights</h1>
+            <p class="page-subtitle">Machine learning powered financial intelligence</p>
+          </div>
+          <button class="btn-secondary" id="refresh-insights-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Refresh AI
+          </button>
+        </div>
+
+        <div class="insights-grid">
+          <div class="insights-main">
+            <div class="glass-card ai-summary-card">
+              <div class="ai-header">
+                <span class="ai-chip">AI</span>
+                <h3>Spending Summary</h3>
+              </div>
+              <div id="ai-summary-text" class="ai-text">Add some expenses to get your personalized AI analysis.</div>
+            </div>
+
+            <div class="glass-card">
+              <h3>Spending Heatmap</h3>
+              <p class="card-sub">Day-of-week spending patterns</p>
+              <div class="heatmap" id="heatmap"></div>
+            </div>
+
+            <div class="glass-card">
+              <div class="ai-header">
+                <span class="ai-chip">ML</span>
+                <h3>Category Intelligence</h3>
+              </div>
+              <div id="category-intel" class="intel-grid">
+                <!-- dynamically generated -->
+              </div>
+            </div>
+          </div>
+
+          <div class="insights-side">
+            <div class="glass-card tips-card">
+              <div class="ai-header">
+                <span class="ai-chip">AI</span>
+                <h3>Smart Tips</h3>
+              </div>
+              <div id="ai-tips" class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-icon">💡</div>
+                  <div>Add expenses to receive personalized AI tips.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-card">
+              <h3>Spending Score</h3>
+              <div class="score-display">
+                <div class="score-ring" id="score-ring">
+                  <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="url(#scoreGrad)" stroke-width="8" stroke-linecap="round"
+                      stroke-dasharray="251.2" stroke-dashoffset="251.2" id="score-circle"
+                      transform="rotate(-90 50 50)"/>
+                    <defs>
+                      <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#6ee7b7"/>
+                        <stop offset="100%" stop-color="#3b82f6"/>
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  <div class="score-value" id="score-value">—</div>
+                </div>
+                <div class="score-label" id="score-label">Financial Health Score</div>
+                <div class="score-desc" id="score-desc">Add expenses to calculate your score</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Add Expense Modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="expense-modal">
+      <div class="modal-header">
+        <h2>Add New Expense</h2>
+        <button class="modal-close" id="modal-close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Description</label>
+          <input type="text" id="expense-desc" placeholder="e.g. Lunch at Chipotle..." class="form-input" autocomplete="off" />
+          <div class="ai-suggestion" id="ai-suggestion" style="display:none">
+            <span class="ai-chip small">AI</span>
+            <span id="ai-suggestion-text"></span>
+            <button class="accept-btn" id="accept-category">Apply</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Amount ($)</label>
+            <input type="number" id="expense-amount" placeholder="0.00" min="0" step="0.01" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="expense-date" class="form-input" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Category</label>
+          <div class="category-grid" id="category-grid">
+            <button class="cat-btn" data-cat="food">🍔<span>Food</span></button>
+            <button class="cat-btn" data-cat="transport">🚗<span>Transport</span></button>
+            <button class="cat-btn" data-cat="shopping">🛍️<span>Shopping</span></button>
+            <button class="cat-btn" data-cat="health">💊<span>Health</span></button>
+            <button class="cat-btn" data-cat="entertainment">🎬<span>Entertainment</span></button>
+            <button class="cat-btn" data-cat="bills">📄<span>Bills</span></button>
+            <button class="cat-btn" data-cat="education">📚<span>Education</span></button>
+            <button class="cat-btn" data-cat="travel">✈️<span>Travel</span></button>
+            <button class="cat-btn" data-cat="fitness">💪<span>Fitness</span></button>
+            <button class="cat-btn" data-cat="personal">👤<span>Personal</span></button>
+            <button class="cat-btn" data-cat="investments">📈<span>Invest</span></button>
+            <button class="cat-btn" data-cat="other">📦<span>Other</span></button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Notes (optional)</label>
+          <input type="text" id="expense-notes" placeholder="Add a note..." class="form-input" />
+        </div>
+
+        <button class="btn-primary full" id="save-expense-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Save Expense
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
